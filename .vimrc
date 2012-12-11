@@ -29,6 +29,7 @@ Bundle 'scrooloose/nerdtree'
 Bundle 'bbommarito/vim-slim'
 
 Bundle 'altercation/vim-colors-solarized'
+Bundle 'https://github.com/jpo/vim-railscasts-theme.git'
 Bundle 'rodjek/vim-puppet'
 Bundle 'kchmck/vim-coffee-script'
 
@@ -46,7 +47,9 @@ filetype plugin indent on     " required!
 " NOTE: comments after Bundle command are not allowed..
 "
 
-
+set backupdir=$TEMP,$TMP,.
+set nobackup
+set nowritebackup
 set expandtab
 set sw=2
 set tabstop=2
@@ -55,17 +58,16 @@ set nu
 set cursorline
 " colorscheme evening
 colorscheme solarized
-set bg=dark
+"set bg=dark
+set bg=light
 
 set showmode
 set guioptions-=T
 set ruler
 set cc=80
+set wildmenu
 
-function Over9000()
-  highlight OverLength ctermbg=red ctermfg=white guibg=#592929
-  match OverLength /\%81v.\+/
-endfunc
+set guifont=Monaco:h14
 
 " Delete trailing white space when saving
 func! DeleteTrailingWS()
@@ -74,4 +76,38 @@ func! DeleteTrailingWS()
   exe "normal `z"
 endfunc
 
-set guifont=Monaco:h14
+" Removes blank spaces and condenses blank lines
+func! CondenseBlankLines()
+  %s/\s\+$//e
+  %s/\n\{3,}/\r\r/e
+endfunc
+
+autocmd BufWritePost <buffer> call CondenseBlankLines()
+autocmd BufWritePost <buffer> set expandtab
+autocmd BufWritePost <buffer> retab
+
+cnoreabbr ntf NERDTreeFind
+cnoreabbr nt NERDTree
+cnoreabbr ctf CommandTFlush
+cnoreabbr ct CommandT
+cnoreabbr spaces call CondenseBlankLines()
+cnoreabbr dws call DeleteTrailingWS()
+cnoreabbr cws call DeleteTrailingWS()
+cnoreabbr Wa wa
+cnoreabbr W w
+cnoreabbr vrc source ~/.vimrc
+
+set wildignore+=buildconfig,.git,*.pyc,*~,node_modules
+set hlsearch
+set magic
+set showmatch
+let g:CommandTMaxFiles=20000
+let g:CommandTMaxDepth=25
+
+au BufNewFile,BufRead *.soy set syntax=soy
+"au BufNewFile,BufRead *.soy set filetype=soy
+
+vnoremap <silent> * :call VisualSelection('f')<CR>
+vnoremap <silent> # :call VisualSelection('b')<CR>
+
+set noerrorbells visualbell t_vb=
